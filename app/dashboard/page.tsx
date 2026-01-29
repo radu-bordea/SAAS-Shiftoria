@@ -16,13 +16,12 @@ export default function DashboardPage() {
           12
         </CardContent>
       </Card>
-
       <Card>
         <CardHeader>
           <CardTitle>Weekly Hours</CardTitle>
         </CardHeader>
         <CardContent className="text-3xl font-semibold">
-          320
+          320 
         </CardContent>
       </Card>
     </div>
