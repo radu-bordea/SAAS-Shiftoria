@@ -8,6 +8,8 @@
 - npx shadcn@latest init
 - npx shadcn@latest add sonner
 - npx shadcn@latest add card
+- npx shadcn@latest add sheet button
+
 
 
 # clerk
