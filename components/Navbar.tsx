@@ -5,10 +5,17 @@ import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 import { navLinks } from "@/lib/nav";
 import ThemeToggle from "@/components/ThemeToggle";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -17,7 +24,7 @@ export default function Navbar() {
     <header className="fixed top-0 z-50 w-full border-b bg-background/80 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
         {/* Logo */}
-        <Link href="/" className="text-lg font-bold">
+        <Link href="/dashboard" className="text-lg font-bold">
           Shiftoria
         </Link>
 
@@ -45,6 +52,18 @@ export default function Navbar() {
         {/* Right actions */}
         <div className="flex items-center gap-2">
           <ThemeToggle />
+
+          <SignedIn>
+            {/* Shows avatar + dropdown with Sign Out */}
+            <UserButton showName={true} afterSwitchSessionUrl="/dashboard" />
+          </SignedIn>
+
+          <SignedOut>
+            {/* Sign In button if not logged in */}
+            <SignInButton>
+              <Button variant="outline">Sign In</Button>
+            </SignInButton>
+          </SignedOut>
 
           {/* Mobile menu */}
           <Sheet>

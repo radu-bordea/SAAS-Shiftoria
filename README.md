@@ -3,6 +3,7 @@
 
 # libraries
 - npm install next-themes
+- npm i react-icons
 
 # shadcn
 - npx shadcn@latest init
