@@ -11,6 +11,12 @@ const publicRoutes = createRouteMatcher(["/sign-in(.*)", "/sign-up(.*)"]);
 // Owner-only route: /businesses
 const ownerOnlyRoute = createRouteMatcher(["/businesses(.*)"]);
 
+// Owner-only route: /businesses
+const adminAndOwnerRoute = createRouteMatcher([
+  "/dashboard/staff",
+  "/dashboard/settings",
+]);
+
 export default clerkMiddleware(async (auth, req) => {
   // Allow public routes
   if (publicRoutes(req)) return NextResponse.next();
@@ -45,6 +51,14 @@ export default clerkMiddleware(async (auth, req) => {
     // Not owner → redirect to dashboard
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
+
+const isAdminOrOwner =
+  orgRole === "org:admin" || orgRole === "org:owner";
+
+if (adminAndOwnerRoute(req) && !isAdminOrOwner) {
+  return NextResponse.redirect(new URL("/dashboard", req.url));
+}
+
 
   // All other pages are accessible
   return NextResponse.next();

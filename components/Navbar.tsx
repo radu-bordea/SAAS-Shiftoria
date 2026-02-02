@@ -24,12 +24,24 @@ export default function Navbar() {
   const role = membership?.role; // "owner" | "admin" | "staff"
 
   // Filter links safely: show /businesses only for owners
-  const filteredLinks = navLinks.filter((link) => {
-    if (link.href === "/businesses") {
-      return role === "org:owner"; // show only for owners
-    }
-    return true;
-  });
+const filteredLinks = navLinks.filter((link) => {
+  // Businesses → owner only
+  if (link.href === "/businesses") {
+    return role === "org:owner";
+  }
+
+  // Staff & Settings → owner OR admin (not staff)
+  if (
+    link.href === "/dashboard/staff" ||
+    link.href === "/dashboard/settings"
+  ) {
+    return role === "org:owner" || role === "org:admin";
+  }
+
+  // Everything else → visible to everyone
+  return true;
+});
+
 
   return (
     <header className="fixed top-0 z-50 w-full border-b bg-background/80 backdrop-blur">

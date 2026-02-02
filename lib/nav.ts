@@ -5,3 +5,5 @@ export const navLinks = [
   { href: "/dashboard/settings", label: "Settings" },
   { href: "/businesses", label: "Businesses" }, // Owner only (later hide)
 ];
+
+
