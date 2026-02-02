@@ -15,7 +15,13 @@ import {
 
 import { navLinks } from "@/lib/nav";
 import ThemeToggle from "@/components/ThemeToggle";
-import { SignedIn, SignedOut, SignInButton, UserButton, useOrganization } from "@clerk/nextjs";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  UserButton,
+  useOrganization,
+} from "@clerk/nextjs";
 import ActiveOrgInfo from "@/components/ActiveOrgInfo";
 
 export default function Navbar() {
@@ -24,24 +30,23 @@ export default function Navbar() {
   const role = membership?.role; // "owner" | "admin" | "staff"
 
   // Filter links safely: show /businesses only for owners
-const filteredLinks = navLinks.filter((link) => {
-  // Businesses → owner only
-  if (link.href === "/businesses") {
-    return role === "org:owner";
-  }
+  const filteredLinks = navLinks.filter((link) => {
+    // Businesses → owner only
+    if (link.href === "/businesses") {
+      return role === "org:owner";
+    }
 
-  // Staff & Settings → owner OR admin (not staff)
-  if (
-    link.href === "/dashboard/staff" ||
-    link.href === "/dashboard/settings"
-  ) {
-    return role === "org:owner" || role === "org:admin";
-  }
+    // Staff & Settings → owner OR admin (not staff)
+    if (
+      link.href === "/dashboard/staff" ||
+      link.href === "/dashboard/settings"
+    ) {
+      return role === "org:owner" || role === "org:admin";
+    }
 
-  // Everything else → visible to everyone
-  return true;
-});
-
+    // Everything else → visible to everyone
+    return true;
+  });
 
   return (
     <header className="fixed top-0 z-50 w-full border-b bg-background/80 backdrop-blur">
@@ -52,7 +57,13 @@ const filteredLinks = navLinks.filter((link) => {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className="hidden md:flex items-center gap-6" >
+          {/* Org info on desktop only */}
+          {membership && (
+            <div className="mr-6 px-4 py-2 rounded-2xl shadow-sm shadow-amber-300">
+              <ActiveOrgInfo />
+            </div>
+          )}
           {filteredLinks.map((link) => {
             const isActive = pathname.startsWith(link.href);
             return (
@@ -60,13 +71,16 @@ const filteredLinks = navLinks.filter((link) => {
                 key={link.href}
                 href={link.href}
                 className={`text-sm font-medium transition-colors ${
-                  isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                  isActive
+                    ? "text-primary"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {link.label}
               </Link>
             );
           })}
+
         </nav>
 
         {/* Right actions */}
@@ -74,9 +88,6 @@ const filteredLinks = navLinks.filter((link) => {
           <ThemeToggle />
 
           <SignedIn>
-            {/* Organization + role */}
-            {membership && <ActiveOrgInfo />}
-
             {/* Clerk user button */}
             <UserButton showName={true} afterSwitchSessionUrl="/dashboard" />
           </SignedIn>
@@ -102,7 +113,7 @@ const filteredLinks = navLinks.filter((link) => {
 
               {/* Organization + role on mobile */}
               {membership && (
-                <div className="mt-2 mb-4 px-2">
+                <div className="mt-2 mb-4 ml-2 px-2 py-2 rounded-2xl shadow-sm shadow-amber-300 w-3/7">
                   <ActiveOrgInfo />
                 </div>
               )}
