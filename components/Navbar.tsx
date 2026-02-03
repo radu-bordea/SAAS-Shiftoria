@@ -1,5 +1,6 @@
 "use client";
 
+import { useTheme } from "next-themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
@@ -25,6 +26,8 @@ import {
 import ActiveOrgInfo from "@/components/ActiveOrgInfo";
 
 export default function Navbar() {
+  const { theme } = useTheme(); // 'light' | 'dark' | 'system' | undefined
+
   const pathname = usePathname();
   const { membership } = useOrganization();
   const role = membership?.role; // "owner" | "admin" | "staff"
@@ -57,10 +60,10 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-6" >
+        <nav className="hidden md:flex items-center gap-6">
           {/* Org info on desktop only */}
           {membership && (
-            <div className="mr-6 px-4 py-2 rounded-2xl shadow-sm shadow-amber-300">
+            <div className="mr-6 px-4 py-2 border-r-2">
               <ActiveOrgInfo />
             </div>
           )}
@@ -80,7 +83,6 @@ export default function Navbar() {
               </Link>
             );
           })}
-
         </nav>
 
         {/* Right actions */}
@@ -89,7 +91,15 @@ export default function Navbar() {
 
           <SignedIn>
             {/* Clerk user button */}
-            <UserButton showName={true} afterSwitchSessionUrl="/dashboard" />
+            <UserButton
+              showName
+              afterSwitchSessionUrl="/dashboard"
+              appearance={{
+                variables: {
+                  colorText: theme === "dark" ? "#ffffff" : "#111827", // white in dark, dark-gray in light
+                },
+              }}
+            />
           </SignedIn>
 
           <SignedOut>
@@ -113,7 +123,7 @@ export default function Navbar() {
 
               {/* Organization + role on mobile */}
               {membership && (
-                <div className="mt-2 mb-4 ml-2 px-2 py-2 rounded-2xl shadow-sm shadow-amber-300 w-3/7">
+                <div className="mt-2 mb-4 ml-2 px-2 py-2 border-b-2 w-1/2">
                   <ActiveOrgInfo />
                 </div>
               )}
