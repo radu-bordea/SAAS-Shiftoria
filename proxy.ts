@@ -6,15 +6,14 @@ import {
 import { NextResponse } from "next/server";
 
 // Public routes (sign-in/sign-up)
-const publicRoutes = createRouteMatcher(["/sign-in(.*)", "/sign-up(.*)"]);
+const publicRoutes = createRouteMatcher(["/" ,"/sign-in(.*)", "/sign-up(.*)"]);
 
-// Owner-only route: /businesses
-const ownerOnlyRoute = createRouteMatcher(["/businesses(.*)"]);
 
-// Owner-only route: /businesses
-const adminAndOwnerRoute = createRouteMatcher([
+// Owner-Admin-only route: /dashboard/staff dashboard/settings
+const adminAndMemberRoute = createRouteMatcher([
   "/dashboard/staff",
   "/dashboard/settings",
+  "/dashboard/pricing",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
@@ -39,23 +38,18 @@ export default clerkMiddleware(async (auth, req) => {
 
   // Find membership for current org
   const membership = memberships.find((m) => m.organization.id === orgId);
-  const orgRole = membership?.role; // "owner" | "admin" | "staff"
+  const orgRole = membership?.role; // "owner" | "admin" | "employee"
 
   console.log("Request URL:", req.url);
   console.log("Org ID:", orgId);
   console.log("Memberships:", memberships);
   console.log("Role:", orgRole);
 
-  // Owner-only route protection
-  if (ownerOnlyRoute(req) && orgRole !== "org:owner") {
-    // Not owner → redirect to dashboard
-    return NextResponse.redirect(new URL("/dashboard", req.url));
-  }
 
-const isAdminOrOwner =
-  orgRole === "org:admin" || orgRole === "org:owner";
+const isOwnerOrAdmin =
+  orgRole === "org:owner" || orgRole === "org:admin";
 
-if (adminAndOwnerRoute(req) && !isAdminOrOwner) {
+if (adminAndMemberRoute(req) && !isOwnerOrAdmin) {
   return NextResponse.redirect(new URL("/dashboard", req.url));
 }
 

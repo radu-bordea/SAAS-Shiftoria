@@ -1,10 +1,11 @@
-const SchedulePage = () => {
+
+
+const Schedule = () => {
   return (
-    // "/dashboard/schedule" → shifts
-    //   Schedule
-    // = shift CRUD (Owner/Admin)
-    // = shift view + swap request (Staff)
-    <div>SchedulePage</div>
-  );
-};
-export default SchedulePage
+    <div>
+      Schedule Portal
+    </div>
+  )
+}
+
+export default Schedule

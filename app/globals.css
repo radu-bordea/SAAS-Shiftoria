@@ -25,7 +25,7 @@
   --foreground: oklch(0.18 0.02 260);
 
   --muted: oklch(0.96 0.005 247);
-  --muted-foreground: oklch(0.55 0.04 257);
+  --muted-foreground: oklch(24.069% 0.0266 255.802);
 
   --border: oklch(0.9 0.01 255);
 
@@ -36,17 +36,20 @@
 /* --------------------------------
    Dark theme
 -------------------------------- */
+/* --------------------------------
+   Dark theme
+-------------------------------- */
 .dark {
-  --background: oklch(0.13 0.03 260);
-  --foreground: oklch(0.96 0.01 247);
+  --background: oklch(0.16 0.004 260); /* neutral dark gray */
+  --foreground: oklch(0.92 0.003 260); /* soft off-white */
 
-  --muted: oklch(0.22 0.03 260);
-  --muted-foreground: oklch(0.7 0.04 256);
+  --muted: oklch(0.22 0.005 260); /* panel gray */
+  --muted-foreground: oklch(0.68 0.004 260);
 
-  --border: oklch(1 0 0 / 12%);
+  --border: oklch(0.32 0.003 260);
 
-  --primary: oklch(0.72 0.16 260);
-  --primary-foreground: oklch(0.15 0.03 260);
+  --primary: oklch(0.62 0.02 260); /* subtle cool gray accent */
+  --primary-foreground: oklch(0.98 0.002 260);
 }
 
 /* --------------------------------

@@ -1,24 +1,28 @@
-// app/(app)/layout.tsx
-"use server";
-
 import { ReactNode } from "react";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import Sidebar from "@/components/Sidebar";
 
-import Navbar from "@/components/Navbar";
-import Container from "@/components/Container";
-
-export default async function AppLayout({ children }: { children: ReactNode }) {
-  const { userId } = await auth(); // server-side auth check
+export default async function AppLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const { userId } = await auth();
 
   if (!userId) {
-    redirect("/sign-in"); // not logged in → redirect
+    redirect("/sign-in");
   }
 
   return (
-    <>
-      <Navbar />
-      <Container className="pt-24 pb-10">{children}</Container>
-    </>
+    <div className="flex h-[calc(100vh-4rem)] pt-16 overflow-hidden">
+      <aside className="hidden md:flex md:flex-col w-64 shrink-0 border-r bg-background">
+        <Sidebar />
+      </aside>
+
+      <main className="flex-1 overflow-auto bg-muted/20 p-6">
+        {children}
+      </main>
+    </div>
   );
 }
