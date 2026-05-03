@@ -151,6 +151,17 @@ export default function Navbar() {
                     appearance={{
                       variables: {
                         colorText: theme === "dark" ? "#ffffff" : "#111827",
+                        colorBackground:
+                          theme === "dark" ? "#1f1f23" : "#ffffff",
+                        colorInputBackground:
+                          theme === "dark" ? "#2a2a30" : "#ffffff",
+                        colorNeutral: theme === "dark" ? "#BEBEBE" : "#101010",
+                      },
+                      elements: {
+                        organizationSwitcherTrigger:
+                          theme === "dark"
+                            ? "text-white hover:bg-zinc-800"
+                            : "text-gray-900 hover:bg-gray-100",
                       },
                     }}
                   />

@@ -1,0 +1,251 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/**
+ * =========================
+ * ENUMS
+ * =========================
+ */
+
+enum Role {
+  OWNER
+  ADMIN
+  EMPLOYEE
+}
+
+enum BreakType {
+  PAID
+  UNPAID
+}
+
+enum AssignmentStatus {
+  SCHEDULED
+  ACCEPTED
+  DECLINED
+  COMPLETED
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ExportFormat {
+  EXCEL
+  CSV
+}
+
+/**
+ * =========================
+ * USER PROFILE
+ * Linked to Clerk user
+ * =========================
+ */
+
+model UserProfile {
+  id          String @id @default(cuid())
+  clerkUserId String @unique
+  clerkOrgId  String
+
+  fullName String
+  email    String
+
+  role Role @default(EMPLOYEE)
+
+  phone    String?
+  position String?
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  shiftAssignments ShiftAssignment[]
+  timeEntries      TimeEntry[]
+  createdShifts    Shift[]            @relation("CreatedBy")
+  swapRequests     ShiftSwapRequest[]
+}
+
+/**
+ * =========================
+ * ORGANIZATION SETTINGS
+ * One per Clerk organization
+ * =========================
+ */
+
+model OrganizationSettings {
+  id String @id @default(cuid())
+
+  clerkOrgId String @unique
+
+  businessName String
+
+  timezone String @default("Europe/Oslo")
+
+  allowBreaks Boolean @default(true)
+
+  requireLocation Boolean @default(false)
+
+  exportFormat ExportFormat @default(EXCEL)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/**
+ * =========================
+ * SHIFTS
+ * =========================
+ */
+
+model Shift {
+  id String @id @default(cuid())
+
+  clerkOrgId String
+
+  title String?
+  notes String?
+
+  startTime DateTime
+  endTime   DateTime
+
+  createdById String
+  createdBy   UserProfile @relation("CreatedBy", fields: [createdById], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assignments  ShiftAssignment[]
+  timeEntries  TimeEntry[]
+  swapRequests ShiftSwapRequest[]
+}
+
+/**
+ * =========================
+ * SHIFT ASSIGNMENTS
+ * =========================
+ */
+
+model ShiftAssignment {
+  id String @id @default(cuid())
+
+  shiftId    String
+  employeeId String
+
+  status AssignmentStatus @default(SCHEDULED)
+
+  shift    Shift       @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+  employee UserProfile @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([shiftId, employeeId])
+}
+
+/**
+ * =========================
+ * TIME ENTRIES
+ * =========================
+ */
+
+model TimeEntry {
+  id String @id @default(cuid())
+
+  employeeId String
+  shiftId    String?
+
+  clockIn  DateTime
+  clockOut DateTime?
+
+  notes String?
+
+  latitudeIn  Float?
+  longitudeIn Float?
+
+  latitudeOut  Float?
+  longitudeOut Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  employee UserProfile @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  shift    Shift?      @relation(fields: [shiftId], references: [id])
+
+  breaks BreakEntry[]
+}
+
+/**
+ * =========================
+ * BREAKS
+ * =========================
+ */
+
+model BreakEntry {
+  id String @id @default(cuid())
+
+  timeEntryId String
+
+  startTime DateTime
+  endTime   DateTime?
+
+  type BreakType @default(UNPAID)
+
+  timeEntry TimeEntry @relation(fields: [timeEntryId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}
+
+/**
+ * =========================
+ * SHIFT SWAP REQUESTS
+ * Future feature
+ * =========================
+ */
+
+model ShiftSwapRequest {
+  id String @id @default(cuid())
+
+  shiftId       String
+  requestedById String
+  targetUserId  String?
+
+  status RequestStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+
+  shift       Shift       @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+  requestedBy UserProfile @relation(fields: [requestedById], references: [id], onDelete: Cascade)
+}
+
+/**
+ * =========================
+ * MONTHLY EXPORTS
+ * =========================
+ */
+
+model MonthlyExport {
+  id String @id @default(cuid())
+
+  clerkOrgId String
+
+  month Int
+  year  Int
+
+  fileUrl String
+
+  createdAt DateTime @default(now())
+
+  @@unique([clerkOrgId, month, year])
+}
